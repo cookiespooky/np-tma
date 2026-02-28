@@ -9,62 +9,34 @@
 </section>
 
 <section id="screen-error" class="screen">
-  <div class="card">
-    <h2>Ошибка запуска</h2>
-    <p id="error-text" class="small" style="margin-top: 8px;">Не удалось загрузить приложение.</p>
-    <button id="retry-btn" class="btn btn-secondary" style="margin-top: 12px;">Повторить</button>
-  </div>
+  <h2>Ошибка запуска</h2>
+  <p id="error-text" class="small" style="margin-top: 8px;">Не удалось загрузить приложение.</p>
+  <button id="retry-btn" class="btn" style="margin-top: 12px;">Повторить</button>
 </section>
 
 <section id="screen-success" class="screen">
-  <div class="card hero">
+  <div class="hero">
     <img id="avatar" class="avatar" alt="avatar" style="display: none;" />
     <div id="avatar-placeholder" class="avatar avatar-placeholder">TG</div>
     <div>
+      <p class="small">Добро пожаловать</p>
       <h1 id="full-name">Пользователь</h1>
       <p id="username" class="small"></p>
     </div>
   </div>
 
-  <div class="card">
-    <p class="small">Всего уникальных посетителей</p>
-    <p id="unique-users" class="value">0</p>
+  <div class="prose">
+    {{ .Body }}
   </div>
 
-  <div class="card">
-    <h2>О разработчике</h2>
-    <ul class="bullets">
-      <li>Создаю Telegram Mini Apps для бизнеса, лидогенерации и внутренних инструментов.</li>
-      <li>Делаю запуск от прототипа до продакшена с минимальным бюджетом на старте.</li>
-      <li>Интегрирую Mini App с ботами, CRM и внешними API.</li>
-    </ul>
-    <ul class="bullets">
-      <li>Frontend: Notepub (статическая сборка)</li>
-      <li>Backend: Yandex Cloud Functions</li>
-      <li>Database: YDB</li>
-      <li>Telegram WebApp API</li>
-    </ul>
-  </div>
-
-  <div class="card">
-    <h3>Связаться</h3>
-    <div class="cta-grid" style="margin-top: 10px;">
-      <button id="cases-btn" class="btn">Смотреть кейсы</button>
-      <button id="tg-btn" class="btn">Написать в Telegram</button>
-      <button id="lead-btn" class="btn">Заказать мини-апп</button>
-    </div>
+  <div class="actions">
+    <button id="cases-btn" class="btn">Смотреть кейсы</button>
+    <button id="tg-btn" class="btn">Написать в Telegram</button>
+    <button id="lead-btn" class="btn">Оставить заявку</button>
     <p id="lead-status" class="status"></p>
   </div>
 
-  <div class="card">
-    <h3>Бесплатно на старте</h3>
-    <ul class="bullets">
-      <li>Notepub: open-source/self-hosted без лицензии на старт.</li>
-      <li>GitHub Pages: бесплатный хостинг статики.</li>
-      <li>Yandex Cloud Functions: бесплатно в рамках free tier и лимитов.</li>
-      <li>Telegram WebApp API: без отдельной оплаты.</li>
-    </ul>
-  </div>
+  <p class="counter">Уникальных посетителей: <span id="unique-users">0</span></p>
 </section>
 
 <script>
