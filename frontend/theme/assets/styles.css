@@ -17,6 +17,7 @@ html,
 body {
   margin: 0;
   padding: 0;
+  background: #ffffff;
   color: var(--ink);
   font-family: "Nunito Sans", "Segoe UI", sans-serif;
   min-height: 100%;
@@ -67,7 +68,7 @@ p {
 }
 
 h1 {
-  font-size: 46px;
+  font-size: 20px;
   line-height: 1.05;
   margin: 4px 0;
 }
@@ -104,8 +105,8 @@ h1 {
 .btn {
   border: 0;
   border-radius: 12px;
-  padding: 20px 16px;
-  font-size: 20px;
+  padding: 14px 10px;
+  font-size: 16px;
   font-weight: 600;
   cursor: pointer;
   text-align: center;
@@ -180,7 +181,7 @@ h1 {
   }
 
   h1 {
-    font-size: 38px;
+    font-size: 20px;
   }
 
   .small {
@@ -188,7 +189,7 @@ h1 {
   }
 
   .btn {
-    font-size: 19px;
-    padding: 18px 14px;
+    font-size: 16px;
+    padding: 14px 10px;
   }
 }
