@@ -139,8 +139,8 @@ h1 {
 }
 
 .counter {
-  margin-top: 24px;
-  font-size: 18px;
+  margin-top: 0;
+  font-size: 12px;
   color: var(--ink-soft);
 }
 
