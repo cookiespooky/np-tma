@@ -31,7 +31,7 @@ cd frontend
 
 ```js
 window.__NP_TMA_CONFIG__ = {
-  apiBase: "https://functions.yandexcloud.net/<function-id>"
+  apiBase: "https://<api-gateway-domain>.apigw.yandexcloud.net"
 };
 ```
 
@@ -75,11 +75,19 @@ npm ci
 yc serverless function create --name np-tma
 ```
 
-### Задеплоить код
+### Создать бакет для большого пакета функции (один раз)
+
+```bash
+yc storage bucket create --name np-tma-artifacts-20260228
+```
+
+### Задеплоить код функции
 
 ```bash
 cd backend
-zip -r function.zip index.js package.json package-lock.json node_modules
+zip -qr function.zip index.js package.json package-lock.json node_modules
+SHA=$(shasum -a 256 function.zip | awk '{print $1}')
+yc storage s3 cp function.zip s3://np-tma-artifacts-20260228/function.zip
 
 yc serverless function version create \
   --function-name np-tma \
@@ -87,24 +95,41 @@ yc serverless function version create \
   --entrypoint index.handler \
   --memory 128m \
   --execution-timeout 5s \
-  --source-path function.zip \
+  --package-bucket-name np-tma-artifacts-20260228 \
+  --package-object-name function.zip \
+  --package-sha256 "$SHA" \
   --service-account-id <new-service-account-id> \
   --environment BOT_TOKEN="<bot-token>",OWNER_CHAT_ID="443746526",ALLOWED_ORIGIN="https://cookiespooky.github.io/np-tma",YDB_ENDPOINT="<ydb-endpoint>",YDB_DATABASE="<ydb-database>",YDB_TABLE="tma_users",AUTH_TTL_SECONDS="3600",LEAD_RATE_LIMIT_SECONDS="300",TELEGRAM_API_BASE="https://api.telegram.org",YDB_METADATA_CREDENTIALS="1"
 ```
 
-### HTTP trigger
+### Дать публичный invoke-доступ функции
 
 ```bash
-yc serverless trigger create http \
-  --name np-tma-http \
-  --function-name np-tma \
-  --function-service-account-id <new-service-account-id> \
-  --invoke-function
+yc serverless function add-access-binding np-tma \
+  --role serverless.functions.invoker \
+  --subject system:allUsers
 ```
 
-Используйте URL триггера в `frontend/theme/assets/app-config.js`.
+### Создать API Gateway с маршрутами `/validate` и `/lead`
 
-## 6) API contract
+```bash
+yc serverless api-gateway create \
+  --name np-tma-gw \
+  --spec ./apigw.yaml
+```
+
+URL API Gateway используйте как `apiBase` во фронтенде.
+
+## 6) Важный момент по `/lead`
+
+Если Telegram отвечает `Bad Request: chat not found`, значит бот не может писать в `OWNER_CHAT_ID`.
+Нужно:
+
+1. Убедиться, что `OWNER_CHAT_ID` верный.
+2. Открыть этого бота из owner-аккаунта и нажать `Start`.
+3. Повторить `/lead`.
+
+## 7) API contract
 
 ### `POST /validate`
 
@@ -148,7 +173,7 @@ Success:
 
 Rate limit: не чаще 1 раза в 5 минут на `user_id`.
 
-## 7) Error codes
+## 8) Error codes
 
 - `MISSING_INITDATA`
 - `INVALID_INITDATA`
@@ -156,7 +181,7 @@ Rate limit: не чаще 1 раза в 5 минут на `user_id`.
 - `RATE_LIMITED`
 - `INTERNAL_ERROR`
 
-## 8) Безопасные логи
+## 9) Безопасные логи
 
 Логируются только:
 
@@ -165,4 +190,3 @@ Rate limit: не чаще 1 раза в 5 минут на `user_id`.
 - `timestamp`
 
 Без `initData`, без `hash`, без query string.
-
