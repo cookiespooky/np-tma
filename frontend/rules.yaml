@@ -1,0 +1,39 @@
+version: 1
+
+fields:
+  required: ["type", "slug", "title"]
+  optional: ["description", "draft"]
+  defaults:
+    draft: false
+
+fm_schema:
+  draft: boolean
+
+types:
+  home:
+    template: "home.html"
+    permalink: "/"
+    include_in:
+      sitemap: true
+      search: false
+
+sitemap:
+  include_types: ["home"]
+  exclude_drafts: true
+
+search:
+  include_types: []
+  exclude_drafts: true
+
+validation:
+  single_page_of_type:
+    home: 1
+  duplicate_route:
+    action: "error"
+  unknown_type:
+    action: "error"
+  unique_slug:
+    action: "error"
+  permalink_requires_slug:
+    action: "error"
+

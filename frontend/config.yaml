@@ -1,0 +1,45 @@
+site:
+  id: np-tma
+  base_url: "https://cookiespooky.github.io/np-tma/"
+  title: "Визитка разработчика"
+  description: "Telegram Mini App визитка разработчика"
+  default_og_image: ""
+  host: 127.0.0.1
+
+s3:
+  endpoint: ""
+  region: ""
+  force_path_style: true
+  bucket: ""
+  prefix: ""
+  access_key: ""
+  secret_key: ""
+
+content:
+  source: "local"
+  local_dir: "./content"
+
+paths:
+  file_root: ./.notepub
+  artifacts_dir: ./.notepub/artifacts
+  snapshot_file: ./.notepub/snapshot/objects.json
+  cache_root: ./.notepub/cache
+
+theme:
+  dir: .
+  name: "theme"
+  templates_subdir: templates
+  assets_subdir: assets
+
+server:
+  listen: "127.0.0.1:8081"
+
+rules_path: ./rules.yaml
+
+robots:
+  disallow: []
+
+cache:
+  html_ttl_seconds: 60
+  stale_if_error_seconds: 300
+

@@ -1,0 +1,51 @@
+name: Deploy Frontend To Pages
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download Notepub
+        run: |
+          curl -L -o /usr/local/bin/notepub https://github.com/cookiespooky/notepub/releases/download/v0.1.3/notepub_linux_amd64
+          chmod +x /usr/local/bin/notepub
+          notepub version
+
+      - name: Build frontend
+        run: |
+          cd frontend
+          notepub validate --config ./config.yaml --rules ./rules.yaml
+          notepub build --config ./config.yaml --rules ./rules.yaml --dist ./dist
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: frontend/dist
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+

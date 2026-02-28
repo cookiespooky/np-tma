@@ -1,0 +1,224 @@
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="{{ .AssetsBase }}/app-config.js"></script>
+
+<section id="screen-loading" class="screen is-visible">
+  <div class="loader">
+    <div class="spinner"></div>
+    <p class="small">Проверяем Telegram initData...</p>
+  </div>
+</section>
+
+<section id="screen-error" class="screen">
+  <div class="card">
+    <h2>Ошибка запуска</h2>
+    <p id="error-text" class="small" style="margin-top: 8px;">Не удалось загрузить приложение.</p>
+    <button id="retry-btn" class="btn btn-secondary" style="margin-top: 12px;">Повторить</button>
+  </div>
+</section>
+
+<section id="screen-success" class="screen">
+  <div class="card hero">
+    <img id="avatar" class="avatar" alt="avatar" style="display: none;" />
+    <div id="avatar-placeholder" class="avatar avatar-placeholder">TG</div>
+    <div>
+      <h1 id="full-name">Пользователь</h1>
+      <p id="username" class="small"></p>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="small">Всего уникальных посетителей</p>
+    <p id="unique-users" class="value">0</p>
+  </div>
+
+  <div class="card">
+    <h2>О разработчике</h2>
+    <ul class="bullets">
+      <li>Создаю Telegram Mini Apps для бизнеса, лидогенерации и внутренних инструментов.</li>
+      <li>Делаю запуск от прототипа до продакшена с минимальным бюджетом на старте.</li>
+      <li>Интегрирую Mini App с ботами, CRM и внешними API.</li>
+    </ul>
+    <ul class="bullets">
+      <li>Frontend: Notepub (статическая сборка)</li>
+      <li>Backend: Yandex Cloud Functions</li>
+      <li>Database: YDB</li>
+      <li>Telegram WebApp API</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Связаться</h3>
+    <div class="cta-grid" style="margin-top: 10px;">
+      <button id="cases-btn" class="btn">Смотреть кейсы</button>
+      <button id="tg-btn" class="btn">Написать в Telegram</button>
+      <button id="lead-btn" class="btn">Заказать мини-апп</button>
+    </div>
+    <p id="lead-status" class="status"></p>
+  </div>
+
+  <div class="card">
+    <h3>Бесплатно на старте</h3>
+    <ul class="bullets">
+      <li>Notepub: open-source/self-hosted без лицензии на старт.</li>
+      <li>GitHub Pages: бесплатный хостинг статики.</li>
+      <li>Yandex Cloud Functions: бесплатно в рамках free tier и лимитов.</li>
+      <li>Telegram WebApp API: без отдельной оплаты.</li>
+    </ul>
+  </div>
+</section>
+
+<script>
+  (function () {
+    const config = window.__NP_TMA_CONFIG__ || {};
+    const API_BASE = config.apiBase || '';
+    const CASES_URL = 'https://cookiespooky.github.io';
+    const TELEGRAM_URL = 'https://t.me/cookiespooky';
+
+    const state = {
+      initData: '',
+      user: null,
+    };
+
+    const screenLoading = document.getElementById('screen-loading');
+    const screenError = document.getElementById('screen-error');
+    const screenSuccess = document.getElementById('screen-success');
+    const errorText = document.getElementById('error-text');
+    const retryBtn = document.getElementById('retry-btn');
+
+    const fullName = document.getElementById('full-name');
+    const username = document.getElementById('username');
+    const avatar = document.getElementById('avatar');
+    const avatarPlaceholder = document.getElementById('avatar-placeholder');
+    const uniqueUsers = document.getElementById('unique-users');
+    const leadBtn = document.getElementById('lead-btn');
+    const leadStatus = document.getElementById('lead-status');
+
+    function showScreen(name) {
+      screenLoading.classList.toggle('is-visible', name === 'loading');
+      screenError.classList.toggle('is-visible', name === 'error');
+      screenSuccess.classList.toggle('is-visible', name === 'success');
+    }
+
+    function humanError(code) {
+      const map = {
+        MISSING_INITDATA: 'Не получены данные Telegram. Откройте приложение через бота.',
+        INVALID_INITDATA: 'Ошибка авторизации Telegram.',
+        EXPIRED_INITDATA: 'Сессия устарела. Перезапустите мини-апп.',
+        RATE_LIMITED: 'Заявка уже отправлялась недавно. Попробуйте позже.',
+        INTERNAL_ERROR: 'Внутренняя ошибка сервера.',
+      };
+      return map[code] || 'Не удалось выполнить запрос.';
+    }
+
+    function tgOpen(url) {
+      const tg = window.Telegram && window.Telegram.WebApp;
+      if (tg && typeof tg.openLink === 'function') {
+        tg.openLink(url);
+        return;
+      }
+      window.open(url, '_blank', 'noopener');
+    }
+
+    async function postApi(path, payload) {
+      if (!API_BASE) {
+        throw new Error('API base URL is not configured');
+      }
+
+      const response = await fetch(API_BASE + path, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const data = await response.json().catch(function () {
+        return { ok: false, error_code: 'INTERNAL_ERROR', message: 'Invalid JSON response' };
+      });
+      if (!response.ok || !data.ok) {
+        const error = new Error(data.message || 'Request failed');
+        error.code = data.error_code || 'INTERNAL_ERROR';
+        throw error;
+      }
+      return data;
+    }
+
+    function renderUser(user) {
+      const full = [user.first_name || '', user.last_name || ''].join(' ').trim();
+      fullName.textContent = full || 'Пользователь Telegram';
+
+      if (user.username) {
+        username.style.display = 'block';
+        username.textContent = '@' + user.username;
+      } else {
+        username.style.display = 'none';
+      }
+
+      if (user.photo_url) {
+        avatar.src = user.photo_url;
+        avatar.style.display = 'block';
+        avatarPlaceholder.style.display = 'none';
+      } else {
+        avatar.style.display = 'none';
+        avatarPlaceholder.style.display = 'inline-flex';
+      }
+    }
+
+    async function bootstrap() {
+      showScreen('loading');
+      leadStatus.textContent = '';
+      leadStatus.classList.remove('error');
+
+      try {
+        const tg = window.Telegram && window.Telegram.WebApp;
+        if (!tg || !tg.initData) {
+          const err = new Error('Missing initData');
+          err.code = 'MISSING_INITDATA';
+          throw err;
+        }
+
+        tg.ready();
+        state.initData = tg.initData;
+
+        const payload = await postApi('/validate', { initData: state.initData });
+        state.user = payload.user;
+
+        renderUser(payload.user);
+        uniqueUsers.textContent = String(payload.stats.unique_users || 0);
+        showScreen('success');
+      } catch (err) {
+        errorText.textContent = humanError(err.code);
+        showScreen('error');
+      }
+    }
+
+    async function submitLead() {
+      if (!state.initData) {
+        return;
+      }
+
+      leadBtn.disabled = true;
+      leadStatus.classList.remove('error');
+      leadStatus.textContent = 'Отправляем...';
+
+      try {
+        await postApi('/lead', { initData: state.initData });
+        leadStatus.textContent = 'Заявка отправлена.';
+      } catch (err) {
+        leadStatus.classList.add('error');
+        leadStatus.textContent = humanError(err.code);
+      } finally {
+        leadBtn.disabled = false;
+      }
+    }
+
+    document.getElementById('cases-btn').addEventListener('click', function () {
+      tgOpen(CASES_URL);
+    });
+
+    document.getElementById('tg-btn').addEventListener('click', function () {
+      tgOpen(TELEGRAM_URL);
+    });
+
+    leadBtn.addEventListener('click', submitLead);
+    retryBtn.addEventListener('click', bootstrap);
+    bootstrap();
+  })();
+</script>

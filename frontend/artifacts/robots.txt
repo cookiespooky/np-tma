@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://cookiespooky.github.io/np-tma/sitemap-index.xml

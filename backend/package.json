@@ -1,0 +1,21 @@
+{
+  "name": "np-tma-backend",
+  "version": "1.0.0",
+  "description": "YCF backend for Telegram Mini App developer card",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "check": "node --check index.js"
+  },
+  "keywords": [
+    "telegram",
+    "mini-app",
+    "ycf",
+    "ydb"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@yandex-cloud/nodejs-sdk": "^2.9.0",
+    "ydb-sdk": "5.11.1"
+  }
+}

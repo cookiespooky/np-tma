@@ -1,0 +1,31 @@
+openapi: 3.0.0
+info:
+  title: np-tma-api
+  version: 1.0.0
+paths:
+  /validate:
+    post:
+      x-yc-apigateway-integration:
+        type: cloud_functions
+        function_id: d4e9n50ibtnroaubl9mk
+        function_tag: $latest
+        service_account_id: ajevgn4p9u484lan3oj2
+    options:
+      x-yc-apigateway-integration:
+        type: cloud_functions
+        function_id: d4e9n50ibtnroaubl9mk
+        function_tag: $latest
+        service_account_id: ajevgn4p9u484lan3oj2
+  /lead:
+    post:
+      x-yc-apigateway-integration:
+        type: cloud_functions
+        function_id: d4e9n50ibtnroaubl9mk
+        function_tag: $latest
+        service_account_id: ajevgn4p9u484lan3oj2
+    options:
+      x-yc-apigateway-integration:
+        type: cloud_functions
+        function_id: d4e9n50ibtnroaubl9mk
+        function_tag: $latest
+        service_account_id: ajevgn4p9u484lan3oj2

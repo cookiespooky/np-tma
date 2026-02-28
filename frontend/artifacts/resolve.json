@@ -1,0 +1,38 @@
+{
+  "generated_at": "2026-02-28T15:50:59Z",
+  "routes": {
+    "/": {
+      "s3_key": "home.md",
+      "etag": "54bb2d6d13b67d9ba7ba32f70ff29099eecdc5e6",
+      "last_modified": "2026-02-28T15:49:52Z",
+      "status": 200,
+      "route_etag": "W/\"c650cae9139a37692cb4e5200cc0ac4e7a7281a8\""
+    }
+  },
+  "meta": {
+    "/": {
+      "type": "home",
+      "slug": "home",
+      "title": "Визитка разработчика",
+      "description": "Telegram Mini App визитка разработчика",
+      "canonical": "https://cookiespooky.github.io/np-tma/",
+      "robots": "index, follow",
+      "opengraph": {
+        "description": "Telegram Mini App визитка разработчика",
+        "title": "Визитка разработчика",
+        "type": "website",
+        "url": "https://cookiespooky.github.io/np-tma/"
+      },
+      "fm": {
+        "description": "Telegram Mini App визитка разработчика",
+        "draft": false,
+        "slug": "home",
+        "title": "Визитка разработчика",
+        "type": "home"
+      }
+    }
+  },
+  "link_targets": {
+    "/": {}
+  }
+}

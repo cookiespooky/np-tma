@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="theme-color" content="#0f172a" />
+  <link rel="stylesheet" href="{{ .AssetsBase }}/styles.css" />
+  {{- if .Page.Description }}
+  <meta name="description" content="{{ .Page.Description }}" />
+  {{- end }}
+  <title>{{ .Title }}</title>
+</head>
+<body>
+  <main class="page">{{ .Body }}</main>
+</body>
+</html>
+

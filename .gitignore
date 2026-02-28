@@ -1,0 +1,9 @@
+.DS_Store
+.env
+*.log
+dist/
+.notepub/
+node_modules/
+frontend/dist/
+tools/notepub
+backend/function.zip
