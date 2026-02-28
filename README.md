@@ -27,7 +27,7 @@ cd frontend
 
 ### Конфиг API для фронтенда
 
-В `frontend/theme/assets/app-config.js` укажите URL HTTP-триггера функции:
+В `frontend/theme/assets/app-config.js` укажите URL API Gateway:
 
 ```js
 window.__NP_TMA_CONFIG__ = {
